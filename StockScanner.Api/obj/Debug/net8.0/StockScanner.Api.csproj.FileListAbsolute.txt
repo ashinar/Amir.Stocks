@@ -33,3 +33,7 @@ C:\Amir\Github\Amir.Stocks\StockScanner.Api\obj\Debug\net8.0\refint\StockScanner
 C:\Amir\Github\Amir.Stocks\StockScanner.Api\obj\Debug\net8.0\StockScanner.Api.pdb
 C:\Amir\Github\Amir.Stocks\StockScanner.Api\obj\Debug\net8.0\StockScanner.Api.genruntimeconfig.cache
 C:\Amir\Github\Amir.Stocks\StockScanner.Api\obj\Debug\net8.0\ref\StockScanner.Api.dll
+C:\Amir\Github\Amir.Stocks\StockScanner.Api\bin\Debug\net8.0\CSharpAPI.dll
+C:\Amir\Github\Amir.Stocks\StockScanner.Api\bin\Debug\net8.0\Google.Protobuf.dll
+C:\Amir\Github\Amir.Stocks\StockScanner.Api\bin\Debug\net8.0\CSharpAPI.pdb
+C:\Amir\Github\Amir.Stocks\StockScanner.Api\obj\Debug\net8.0\StockScanner.Api.sourcelink.json

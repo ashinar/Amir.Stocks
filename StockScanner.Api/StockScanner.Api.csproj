@@ -11,7 +11,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <Folder Include="Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CSharpAPI">
+      <HintPath>..\..\..\..\Program Files (x86)\TWS_API\samples\CSharp\IBSampleApp\bin\Release\CSharpAPI.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
