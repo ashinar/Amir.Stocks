@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StockScanner.Api.Services.Interfaces;
 
 namespace StockScanner.Api.Controllers
 {
@@ -6,12 +7,34 @@ namespace StockScanner.Api.Controllers
     [Route("api/[controller]")]
     public class GapReversalStrategyController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult Get()
+
+        private readonly IInteractiveBrokersService _interactiveBrokersService;
+
+        public GapReversalStrategyController(
+            IInteractiveBrokersService interactiveBrokersService)
         {
+            _interactiveBrokersService = interactiveBrokersService;
+        }
+
+        [HttpGet("run")]
+        public async Task<IActionResult> Run(
+            CancellationToken cancellationToken)
+        {
+            await _interactiveBrokersService.ConnectAsync(cancellationToken);
+
+            var isConnected = await _interactiveBrokersService.IsConnectedAsync();
+
+            if (!isConnected)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable,"Interactive Brokers is not connected.");
+            }
+
+            // כאן בהמשך תיכנס Gap Reversal Strategy
+
             return Ok(new
             {
-                Message = "Stock Scanner API is running"
+                strategy = "GapReversal",
+                connected = true
             });
         }
     }

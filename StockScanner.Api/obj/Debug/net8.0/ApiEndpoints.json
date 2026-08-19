@@ -1,8 +1,8 @@
 [
   {
     "ContainingType": "StockScanner.Api.Controllers.GapReversalStrategyController",
-    "Method": "Get",
-    "RelativePath": "api/GapReversalStrategy",
+    "Method": "Run",
+    "RelativePath": "api/GapReversalStrategy/run",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
