@@ -7,6 +7,7 @@ namespace StockScanner.Api.Services;
 
 public class InteractiveBrokersService : IInteractiveBrokersService
 {
+    private Thread? _readerThread;
     private readonly InteractiveBrokersOptions _options;
     private readonly InteractiveBrokersWrapper _wrapper;
     private readonly EClientSocket _client;
@@ -27,11 +28,11 @@ public class InteractiveBrokersService : IInteractiveBrokersService
             null);
     }
 
-    public Task ConnectAsync(
+    public async Task ConnectAsync(
         CancellationToken cancellationToken = default)
     {
         if (_client.IsConnected())
-            return Task.CompletedTask;
+            return;
 
         _signal = new EReaderMonitorSignal();
 
@@ -40,27 +41,36 @@ public class InteractiveBrokersService : IInteractiveBrokersService
             _options.Port,
             _options.ClientId);
 
-        _reader = new EReader(
-            _client,
-            _signal);
+        if (!_client.IsConnected())
+        {
+            throw new InvalidOperationException(
+                $"Failed to connect to Interactive Brokers at {_options.Host}:{_options.Port}");
+        }
 
+        _reader = new EReader(_client, _signal);
         _reader.Start();
 
-        _readerTask = Task.Run(() =>
+        _readerThread = new Thread(() =>
         {
-            while (_client.IsConnected() &&
-                   !cancellationToken.IsCancellationRequested)
+            while (_client.IsConnected())
             {
                 _signal.waitForSignal();
 
-                if (_client.IsConnected())
+                try
                 {
                     _reader.processMsgs();
                 }
+                catch
+                {
+                    break;
+                }
             }
-        }, cancellationToken);
+        });
 
-        return Task.CompletedTask;
+        _readerThread.IsBackground = true;
+        _readerThread.Start();
+
+        await Task.CompletedTask;
     }
 
     public Task DisconnectAsync()

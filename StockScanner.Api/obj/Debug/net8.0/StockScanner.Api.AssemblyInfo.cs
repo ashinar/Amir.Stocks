@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StockScanner.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e103059790d65d2d4e3a7d25e79d2185e55a50f0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0da316fa04207a309d777535b51d050a0b281c66")]
 [assembly: System.Reflection.AssemblyProductAttribute("StockScanner.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StockScanner.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

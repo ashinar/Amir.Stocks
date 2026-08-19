@@ -5,9 +5,19 @@ namespace StockScanner.Api.Services
 {
     public class InteractiveBrokersWrapper : EWrapper
     {
+        private TaskCompletionSource<bool> _connectionTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public Task ConnectionTask => _connectionTcs.Task;
+
+
+        public void ResetConnection()
+        {
+            _connectionTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        }
+
         public void nextValidId(int orderId)
         {
             Console.WriteLine($"Connected to IB. Next Order ID: {orderId}");
+            _connectionTcs.TrySetResult(true);
         }
 
         public void error(Exception e)

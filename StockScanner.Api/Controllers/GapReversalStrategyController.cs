@@ -22,13 +22,7 @@ namespace StockScanner.Api.Controllers
         {
             await _interactiveBrokersService.ConnectAsync(cancellationToken);
 
-            var isConnected = await _interactiveBrokersService.IsConnectedAsync();
-
-            if (!isConnected)
-            {
-                return StatusCode(StatusCodes.Status503ServiceUnavailable,"Interactive Brokers is not connected.");
-            }
-
+      
             // כאן בהמשך תיכנס Gap Reversal Strategy
 
             return Ok(new
