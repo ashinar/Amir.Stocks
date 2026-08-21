@@ -17,19 +17,21 @@ namespace StockScanner.Api.Controllers
         }
 
         [HttpGet("run")]
-        public async Task<IActionResult> Run(
-            CancellationToken cancellationToken)
+        public async Task<IActionResult> Run(CancellationToken cancellationToken)
         {
+            Console.WriteLine("GAP: Run STARTED");
+
             await _interactiveBrokersService.ConnectAsync(cancellationToken);
 
-      
+            Console.WriteLine("GAP: ConnectAsync finished");
             // כאן בהמשך תיכנס Gap Reversal Strategy
 
-            return Ok(new
-            {
-                strategy = "GapReversal",
-                connected = true
-            });
+            return Ok(
+                new
+                {
+                    strategy = "GapReversal",
+                    connected = true
+                });
         }
     }
 }

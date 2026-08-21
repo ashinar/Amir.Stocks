@@ -822,7 +822,8 @@ namespace StockScanner.Api.Services
 
         public void nextValidIdProtoBuf(NextValidId nextValidIdProto)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("IB Connected via ProtoBuf");
+            _connectionTcs.TrySetResult(true);
         }
 
         public void currentTimeProtoBuf(CurrentTime currentTimeProto)
