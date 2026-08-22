@@ -10,6 +10,7 @@ namespace StockScanner.Api.Services
         public Task ConnectionTask => _connectionTcs.Task;
 
 
+
         public void ResetConnection()
         {
             _connectionTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -38,42 +39,42 @@ namespace StockScanner.Api.Services
 
         public void currentTime(long time)
         {
-           Debugger.Break();   throw new NotImplementedException();
+            Console.WriteLine($"IB currentTime: {time}");
         }
 
         public void tickPrice(int tickerId, int field, double price, TickAttrib attribs)
         {
-           Debugger.Break();   throw new NotImplementedException();
+            Console.WriteLine($"IB tickPrice: {tickerId}");
         }
 
         public void tickSize(int tickerId, int field, decimal size)
         {
-           Debugger.Break();   throw new NotImplementedException();
+            Console.WriteLine($"IB tickPrice: {tickerId}");
         }
 
         public void tickString(int tickerId, int field, string value)
         {
-           Debugger.Break();   throw new NotImplementedException();
+            Console.WriteLine($"IB tickerId: {tickerId}");
         }
 
         public void tickGeneric(int tickerId, int field, double value)
         {
-           Debugger.Break();   throw new NotImplementedException();
+            Console.WriteLine($"IB tickGeneric: {tickerId}");
         }
 
         public void tickEFP(int tickerId, int tickType, double basisPoints, string formattedBasisPoints, double impliedFuture, int holdDays, string futureLastTradeDate, double dividendImpact, double dividendsToLastTradeDate)
         {
-           Debugger.Break();   throw new NotImplementedException();
+            Console.WriteLine($"IB tickEFP: {tickerId}");
         }
 
         public void deltaNeutralValidation(int reqId, IBApi.DeltaNeutralContract deltaNeutralContract)
         {
-           Debugger.Break();   throw new NotImplementedException();
+            Console.WriteLine($"IB deltaNeutralValidation: {reqId}");
         }
 
         public void tickOptionComputation(int tickerId, int field, int tickAttrib, double impliedVolatility, double delta, double optPrice, double pvDividend, double gamma, double vega, double theta, double undPrice)
         {
-           Debugger.Break();   throw new NotImplementedException();
+            Console.WriteLine($"IB deltaNeutralValidation: {tickOptionComputation}");
         }
 
         public void tickSnapshotEnd(int tickerId)
@@ -93,7 +94,7 @@ namespace StockScanner.Api.Services
 
         public void accountSummary(int reqId, string account, string tag, string value, string currency)
         {
-           Debugger.Break();   throw new NotImplementedException();
+            Console.WriteLine("IB accountSummary.");
         }
 
         public void accountSummaryEnd(int reqId)
@@ -223,12 +224,16 @@ namespace StockScanner.Api.Services
 
         public void scannerData(int reqId, int rank, IBApi.ContractDetails contractDetails, string distance, string benchmark, string projection, string legsStr)
         {
-           Debugger.Break();   throw new NotImplementedException();
+            Console.WriteLine($"Scanner: {rank} - {contractDetails.Contract.Symbol}");
+
+            Console.WriteLine($"Exchange: {contractDetails.Contract.Exchange}");
+
+            Console.WriteLine($"SecType: {contractDetails.Contract.SecType}");
         }
 
         public void scannerDataEnd(int reqId)
         {
-           Debugger.Break();   throw new NotImplementedException();
+            Console.WriteLine($"Scanner completed. ReqId={reqId}");
         }
 
         public void receiveFA(int faDataType, string faXmlData)

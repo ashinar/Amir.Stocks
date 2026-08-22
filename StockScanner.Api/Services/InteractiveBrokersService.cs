@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using StockScanner.Api.Configuration;
 using StockScanner.Api.Services.Interfaces;
+using System.Net.Sockets;
 
 namespace StockScanner.Api.Services;
 
@@ -31,14 +32,14 @@ public class InteractiveBrokersService : IInteractiveBrokersService
             _signal);
     }
 
-    public async Task ConnectAsync(CancellationToken cancellationToken = default)
+    public async Task<bool> ConnectAsync(CancellationToken cancellationToken = default)
     {
         Console.WriteLine("BEFORE CONNECT");
 
         if (_client.IsConnected())
         {
             Console.WriteLine("ALREADY CONNECTED");
-            return;
+            return false;
         }
 
 
@@ -62,10 +63,9 @@ public class InteractiveBrokersService : IInteractiveBrokersService
         {
             Console.WriteLine("ECONNECT EXCEPTION:");
             Console.WriteLine(ex.ToString());
-            throw;
+            return false;
         }
-        Console.WriteLine(
-            $"2. After eConnect. IsConnected={_client.IsConnected()}");
+        Console.WriteLine($"2. After eConnect. IsConnected={_client.IsConnected()}");
 
 
 
@@ -96,7 +96,7 @@ public class InteractiveBrokersService : IInteractiveBrokersService
                 {
                     Console.WriteLine($"IB Reader error: {ex.GetType().FullName}");
 
-                    Console.WriteLine(ex);
+                    Console.WriteLine(ex);                   
                 }
             }
 
@@ -110,11 +110,27 @@ public class InteractiveBrokersService : IInteractiveBrokersService
 
         Console.WriteLine("WAITING FOR NEXT VALID ID");
 
-        await _wrapper.ConnectionTask.WaitAsync(
+
+        try
+        {
+            await _wrapper.ConnectionTask.WaitAsync(
             TimeSpan.FromSeconds(10),
             cancellationToken);
+        }
+        catch (TimeoutException)
+        {
+            Console.WriteLine("IBKR connection timeout.");
+            return false;
+        }
+        catch (SocketException ex)
+        {
+            Console.WriteLine($"IBKR socket error: {ex.Message}");
+            return false;
+        }
+
 
         Console.WriteLine("IB CONNECTION COMPLETED");
+        return true;
     }
 
     public Task DisconnectAsync()
@@ -144,5 +160,14 @@ public class InteractiveBrokersService : IInteractiveBrokersService
         CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
+    }
+
+    public void StartScanner(ScannerSubscription subscription)
+    {
+        _client.reqScannerSubscription(
+            1001,
+            subscription,
+            new List<TagValue>(),
+            new List<TagValue>());
     }
 }

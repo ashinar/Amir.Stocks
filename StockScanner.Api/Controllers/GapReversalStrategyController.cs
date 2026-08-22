@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StockScanner.Api.Services.Interfaces;
+using StockScanner.Api.Strategies;
 
 namespace StockScanner.Api.Controllers
 {
@@ -9,11 +10,14 @@ namespace StockScanner.Api.Controllers
     {
 
         private readonly IInteractiveBrokersService _interactiveBrokersService;
+        private readonly GapReversalStrategy _gapReversalStrategy;
 
         public GapReversalStrategyController(
-            IInteractiveBrokersService interactiveBrokersService)
+             IInteractiveBrokersService interactiveBrokersService,
+             GapReversalStrategy gapReversalStrategy)
         {
             _interactiveBrokersService = interactiveBrokersService;
+            _gapReversalStrategy = gapReversalStrategy;
         }
 
         [HttpGet("run")]
@@ -21,10 +25,24 @@ namespace StockScanner.Api.Controllers
         {
             Console.WriteLine("GAP: Run STARTED");
 
-            await _interactiveBrokersService.ConnectAsync(cancellationToken);
+            var connected = await _interactiveBrokersService.ConnectAsync(cancellationToken);
+
+            if (!connected)
+            {
+                return StatusCode(503, new
+                {
+                    strategy = "GapReversal",
+                    connected = false,
+                    scannerStarted = false,
+                    message = "Interactive Brokers is not available"
+                });
+            }
+
 
             Console.WriteLine("GAP: ConnectAsync finished");
-            // כאן בהמשך תיכנס Gap Reversal Strategy
+
+
+            await _gapReversalStrategy.StartScannerAsync();
 
             return Ok(
                 new

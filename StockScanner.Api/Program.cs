@@ -1,24 +1,39 @@
-using StockScanner.Api.Configuration;
+﻿using StockScanner.Api.Configuration;
 using StockScanner.Api.Services;
 using StockScanner.Api.Services.Interfaces;
-
+using StockScanner.Api.Strategies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<InteractiveBrokersOptions>(builder.Configuration.GetSection("InteractiveBrokers"));
-builder.Services.AddSingleton<IInteractiveBrokersService,InteractiveBrokersService>();
+// Configuration
+builder.Services.Configure<InteractiveBrokersOptions>(
+    builder.Configuration.GetSection("InteractiveBrokers"));
 
+// Interactive Brokers
+// Singleton - יש חיבור אחד מתמשך ל-TWS
+builder.Services.AddSingleton<
+    IInteractiveBrokersService,
+    InteractiveBrokersService>();
 
-// Add services to the container.
+// Strategies
+builder.Services.AddScoped<GapReversalStrategy>();
+
+builder.Services.AddScoped<IStrategy>(sp =>
+    sp.GetRequiredService<GapReversalStrategy>());
+
+// Scanner service
+builder.Services.AddScoped<StockScannerService>();
+
+// Controllers
 builder.Services.AddControllers();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
