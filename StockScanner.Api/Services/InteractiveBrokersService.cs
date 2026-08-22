@@ -169,7 +169,9 @@ public class InteractiveBrokersService : IInteractiveBrokersService
     }
 
     public async Task<List<StockData>> StartScannerAsync(
-        ScannerSubscription subscription,
+        ScannerSubscription subscription, 
+        List<TagValue> scannerSubscriptionOptions,
+        List<TagValue> scannerSubscriptionFilterOptions,
         CancellationToken cancellationToken = default)
     {
         _scannerStocks = new List<StockData>();
@@ -180,8 +182,8 @@ public class InteractiveBrokersService : IInteractiveBrokersService
         _client.reqScannerSubscription(
             1001,
             subscription,
-            new List<TagValue>(),
-            new List<TagValue>());
+            scannerSubscriptionOptions,
+            scannerSubscriptionFilterOptions);
 
         return await _scannerTcs.Task.WaitAsync(
             TimeSpan.FromSeconds(10),

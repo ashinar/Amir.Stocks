@@ -5,7 +5,7 @@ namespace StockScanner.Api.Services.Interfaces
 {
     public interface IInteractiveBrokersService
     {
-        Task<List<StockData>> StartScannerAsync(ScannerSubscription subscription,CancellationToken cancellationToken = default);
+        Task<List<StockData>> StartScannerAsync(ScannerSubscription subscription,List<TagValue> scannerSubscriptionOptions, List<TagValue> scannerSubscriptionFilterOptions,CancellationToken cancellationToken = default);
         Task<bool> ConnectAsync(CancellationToken cancellationToken = default);
 
         Task DisconnectAsync();
