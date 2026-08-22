@@ -1,6 +1,7 @@
 ﻿using IBApi;
 using Microsoft.Extensions.Options;
 using StockScanner.Api.Configuration;
+using StockScanner.Api.Models;
 using StockScanner.Api.Services.Interfaces;
 using System.Net.Sockets;
 
@@ -18,12 +19,17 @@ public class InteractiveBrokersService : IInteractiveBrokersService
     private EReader? _reader;
     private Task? _readerTask;
 
-    public InteractiveBrokersService(
-        IOptions<InteractiveBrokersOptions> options)
+    private TaskCompletionSource<List<StockData>>? _scannerTcs;
+    private List<StockData> _scannerStocks = new();
+
+    public InteractiveBrokersService(IOptions<InteractiveBrokersOptions> options)
     {
         _options = options.Value;
 
         _wrapper = new InteractiveBrokersWrapper();
+
+        _wrapper.ScannerStockReceived += OnScannerStockReceived;
+        _wrapper.ScannerCompleted += OnScannerCompleted;
 
         _signal = new EReaderMonitorSignal();
 
@@ -162,12 +168,50 @@ public class InteractiveBrokersService : IInteractiveBrokersService
         throw new NotImplementedException();
     }
 
-    public void StartScanner(ScannerSubscription subscription)
+    public async Task<List<StockData>> StartScannerAsync(
+        ScannerSubscription subscription,
+        CancellationToken cancellationToken = default)
     {
+        _scannerStocks = new List<StockData>();
+
+        _scannerTcs = new TaskCompletionSource<List<StockData>>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+
         _client.reqScannerSubscription(
             1001,
             subscription,
             new List<TagValue>(),
             new List<TagValue>());
+
+        return await _scannerTcs.Task.WaitAsync(
+            TimeSpan.FromSeconds(10),
+            cancellationToken);
+    }
+
+    public void StartScanner(ScannerSubscription subscription)
+    {
+        _client.reqScannerSubscription(
+        1001,
+        subscription,
+        new List<TagValue>(),
+        new List<TagValue>());
+    }
+
+    private void OnScannerStockReceived(IBApi.ContractDetails contractDetails)
+    {
+        var symbol = contractDetails.Contract.Symbol;
+
+        Console.WriteLine($"SERVICE RECEIVED: {symbol}");
+
+        _scannerStocks.Add(new StockData
+        {
+            Symbol = symbol
+        });
+    }
+
+    private void OnScannerCompleted()
+    {
+        Console.WriteLine("SERVICE: Scanner completed");
+        _scannerTcs.TrySetResult(_scannerStocks);
     }
 }

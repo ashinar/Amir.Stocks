@@ -16,7 +16,8 @@ public class GapReversalStrategy : IStrategy
 
     public string Name => "GapReversal";
 
-    public Task StartScannerAsync()
+    public async Task StartScannerAsync(
+        CancellationToken cancellationToken = default)
     {
         var subscription = new ScannerSubscription
         {
@@ -26,9 +27,14 @@ public class GapReversalStrategy : IStrategy
             NumberOfRows = 20
         };
 
-        _interactiveBrokersService.StartScanner(subscription);
+        var stocks = await _interactiveBrokersService.StartScannerAsync(
+            subscription,
+            cancellationToken);
 
-        return Task.CompletedTask;
+        foreach (var stock in stocks)
+        {
+            Console.WriteLine($"GAP STOCK: {stock.Symbol}");
+        }
     }
 
     public Task<StrategyResult> AnalyzeAsync(

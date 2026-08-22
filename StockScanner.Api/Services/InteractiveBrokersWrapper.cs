@@ -8,7 +8,8 @@ namespace StockScanner.Api.Services
     {
         private TaskCompletionSource<bool> _connectionTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public Task ConnectionTask => _connectionTcs.Task;
-
+        public event Action<IBApi.ContractDetails>? ScannerStockReceived;
+        public event Action? ScannerCompleted;
 
 
         public void ResetConnection()
@@ -18,63 +19,64 @@ namespace StockScanner.Api.Services
 
         public void nextValidId(int orderId)
         {
-            Console.WriteLine($"Connected to IB. Next Order ID: {orderId}");
+            Debugger.Launch();
+             Console.WriteLine($"Connected to IB. Next Order ID: {orderId}");
             _connectionTcs.TrySetResult(true);
         }
 
         public void error(Exception e)
         {
-            Console.WriteLine($"IB Error: {e.Message}");
+           Debugger.Launch();  Console.WriteLine($"IB Error: {e.Message}");
         }
 
         public void error(string str)
         {
-            Console.WriteLine($"IB Error: {str}");
+           Debugger.Launch();  Console.WriteLine($"IB Error: {str}");
         }
 
         public void error(int id, long errorTime, int errorCode, string errorMsg, string advancedOrderRejectJson)
         {
-            Console.WriteLine($"IB Error - Id: {id}, Code: {errorCode}, Message: {errorMsg}");
+           Debugger.Launch();  Console.WriteLine($"IB Error - Id: {id}, Code: {errorCode}, Message: {errorMsg}");
         }
 
         public void currentTime(long time)
         {
-            Console.WriteLine($"IB currentTime: {time}");
+           Debugger.Launch();  Console.WriteLine($"IB currentTime: {time}");
         }
 
         public void tickPrice(int tickerId, int field, double price, TickAttrib attribs)
         {
-            Console.WriteLine($"IB tickPrice: {tickerId}");
+           Debugger.Launch();  Console.WriteLine($"IB tickPrice: {tickerId}");
         }
 
         public void tickSize(int tickerId, int field, decimal size)
         {
-            Console.WriteLine($"IB tickPrice: {tickerId}");
+           Debugger.Launch();  Console.WriteLine($"IB tickPrice: {tickerId}");
         }
 
         public void tickString(int tickerId, int field, string value)
         {
-            Console.WriteLine($"IB tickerId: {tickerId}");
+           Debugger.Launch();  Console.WriteLine($"IB tickerId: {tickerId}");
         }
 
         public void tickGeneric(int tickerId, int field, double value)
         {
-            Console.WriteLine($"IB tickGeneric: {tickerId}");
+           Debugger.Launch();  Console.WriteLine($"IB tickGeneric: {tickerId}");
         }
 
         public void tickEFP(int tickerId, int tickType, double basisPoints, string formattedBasisPoints, double impliedFuture, int holdDays, string futureLastTradeDate, double dividendImpact, double dividendsToLastTradeDate)
         {
-            Console.WriteLine($"IB tickEFP: {tickerId}");
+           Debugger.Launch();  Console.WriteLine($"IB tickEFP: {tickerId}");
         }
 
         public void deltaNeutralValidation(int reqId, IBApi.DeltaNeutralContract deltaNeutralContract)
         {
-            Console.WriteLine($"IB deltaNeutralValidation: {reqId}");
+           Debugger.Launch();  Console.WriteLine($"IB deltaNeutralValidation: {reqId}");
         }
 
         public void tickOptionComputation(int tickerId, int field, int tickAttrib, double impliedVolatility, double delta, double optPrice, double pvDividend, double gamma, double vega, double theta, double undPrice)
         {
-            Console.WriteLine($"IB deltaNeutralValidation: {tickOptionComputation}");
+           Debugger.Launch();  Console.WriteLine($"IB deltaNeutralValidation: {tickOptionComputation}");
         }
 
         public void tickSnapshotEnd(int tickerId)
@@ -84,17 +86,17 @@ namespace StockScanner.Api.Services
 
         public void managedAccounts(string accountsList)
         {
-            Console.WriteLine($"IB: managedAccounts = {accountsList}");
+           Debugger.Launch();  Console.WriteLine($"IB: managedAccounts = {accountsList}");
         }
 
         public void connectionClosed()
         {
-            Console.WriteLine("IB connection closed.");
+           Debugger.Launch();  Console.WriteLine("IB connection closed.");
         }
 
         public void accountSummary(int reqId, string account, string tag, string value, string currency)
         {
-            Console.WriteLine("IB accountSummary.");
+           Debugger.Launch();  Console.WriteLine("IB accountSummary.");
         }
 
         public void accountSummaryEnd(int reqId)
@@ -139,7 +141,7 @@ namespace StockScanner.Api.Services
 
         public void openOrderEnd()
         {
-            Console.WriteLine("IB: openOrderEnd");
+           Debugger.Launch();  Console.WriteLine("IB: openOrderEnd");
         }
 
         public void contractDetails(int reqId, IBApi.ContractDetails contractDetails)
@@ -224,16 +226,13 @@ namespace StockScanner.Api.Services
 
         public void scannerData(int reqId, int rank, IBApi.ContractDetails contractDetails, string distance, string benchmark, string projection, string legsStr)
         {
-            Console.WriteLine($"Scanner: {rank} - {contractDetails.Contract.Symbol}");
-
-            Console.WriteLine($"Exchange: {contractDetails.Contract.Exchange}");
-
-            Console.WriteLine($"SecType: {contractDetails.Contract.SecType}");
+            ScannerStockReceived?.Invoke(contractDetails);
         }
 
         public void scannerDataEnd(int reqId)
         {
             Console.WriteLine($"Scanner completed. ReqId={reqId}");
+            ScannerCompleted?.Invoke();
         }
 
         public void receiveFA(int faDataType, string faXmlData)
@@ -273,7 +272,7 @@ namespace StockScanner.Api.Services
 
         public void connectAck()
         {
-            Console.WriteLine("IB Connect ACK");
+           Debugger.Launch();  Console.WriteLine("IB Connect ACK");
         }
 
         public void positionMulti(int requestId, string account, string modelCode, IBApi.Contract contract, decimal pos, double avgCost)
@@ -483,13 +482,13 @@ namespace StockScanner.Api.Services
 
         public void openOrdersEndProtoBuf(OpenOrdersEnd openOrdersEndProto)
         {
-            Console.WriteLine("IB: openOrdersEndProtoBuf");
+           Debugger.Launch();  Console.WriteLine("IB: openOrdersEndProtoBuf");
 
         }
 
         public void errorProtoBuf(ErrorMessage errorMessageProto)
         {
-            Console.WriteLine($"IB ERROR: {errorMessageProto}");
+           Debugger.Launch();  Console.WriteLine($"IB ERROR: {errorMessageProto}");
         }
 
         public void execDetailsProtoBuf(ExecutionDetails executionDetailsProto)
@@ -829,7 +828,7 @@ namespace StockScanner.Api.Services
 
         public void nextValidIdProtoBuf(NextValidId nextValidIdProto)
         {
-            Console.WriteLine("IB Connected via ProtoBuf");
+           Debugger.Launch();  Console.WriteLine("IB Connected via ProtoBuf");
             _connectionTcs.TrySetResult(true);
         }
 

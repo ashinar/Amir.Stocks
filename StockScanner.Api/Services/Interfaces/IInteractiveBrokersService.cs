@@ -1,11 +1,11 @@
 ﻿using IBApi;
+using StockScanner.Api.Models;
 
 namespace StockScanner.Api.Services.Interfaces
 {
     public interface IInteractiveBrokersService
     {
-        void StartScanner(ScannerSubscription subscription);
-
+        Task<List<StockData>> StartScannerAsync(ScannerSubscription subscription,CancellationToken cancellationToken = default);
         Task<bool> ConnectAsync(CancellationToken cancellationToken = default);
 
         Task DisconnectAsync();
